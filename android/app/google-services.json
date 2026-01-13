@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "764145042226",
+    "firebase_url": "https://pushnotification-1a017-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "pushnotification-1a017",
+    "storage_bucket": "pushnotification-1a017.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:764145042226:android:6375fff66e6a8a4c394d2b",
+        "android_client_info": {
+          "package_name": "com.example.hoardlinks"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlStTlub6KdbdzTnr3_rvjmH-2VQG2uSk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
