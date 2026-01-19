@@ -7,8 +7,7 @@ import 'package:hoardlinks/data/models/login_response.dart';
 import 'package:http/http.dart' as http;
 
 class AuthProvider extends ChangeNotifier {
-  final String _loginUrl =
-      "https://hoardlinks-backend.onrender.com/api/v1/auth/login";
+  final String _loginUrl = "https://hoardlinks-backend.onrender.com/api/v1/auth/login";
 
   bool _isLoading = false;
   bool _isLoggedIn = false;
@@ -25,19 +24,19 @@ class AuthProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   String? get roleType => _roleType;
   UserModel? get user => _user;
+  String? get accessToken => _accessToken;
 
   // ---------------- LOGIN ----------------
   Future<bool> login({
     required String loginId,
     required String password,
     required String deviceId,
-    required String fcmToken, // ✅ FROM UI
+    required String fcmToken,
   }) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
-    /// 🔴 SAFETY CHECK (same as UI)
     if (fcmToken.isEmpty) {
       _errorMessage = "FCM token not available";
       _isLoading = false;
@@ -58,9 +57,6 @@ class AuthProvider extends ChangeNotifier {
         }),
       );
 
-      debugPrint("STATUS CODE: ${response.statusCode}");
-      debugPrint("RESPONSE BODY: ${response.body}");
-
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
@@ -69,14 +65,10 @@ class AuthProvider extends ChangeNotifier {
         _roleType = data['role_type'];
         _user = UserModel.fromJson(data['user']);
 
-        // 🔐 SAVE TOKEN and STATE/DISTRICT IDs
+        // 🔐 SAVE TO SECURE STORAGE
         await AuthStorage.saveAccessToken(_accessToken!);
-        await AuthStorage.saveStateId(
-          _user!.stateId.toString(),
-        ); // Save stateId as String
-        await AuthStorage.saveDistrictId(
-          _user!.districtId.toString(),
-        ); // Save districtId as String
+        await AuthStorage.saveStateId(_user!.stateId.toString());
+        await AuthStorage.saveDistrictId(_user!.districtId.toString());
 
         _isLoggedIn = true;
         _isLoading = false;
@@ -86,7 +78,6 @@ class AuthProvider extends ChangeNotifier {
         _errorMessage = data['message'] ?? "Login failed";
       }
     } catch (e) {
-      debugPrint("LOGIN ERROR: $e");
       _errorMessage = "Network error";
     }
 
@@ -95,7 +86,35 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     return false;
   }
+// ---------------- LOGOUT ----------------
+  Future<void> logout() async {
+    _isLoading = true;
+    notifyListeners();
 
+    try {
+      // 1. Clear Local Storage (Tokens, IDs, FCM, etc.)
+      await AuthStorage.clearAll(); 
+      
+      // 2. If you are using Firebase Messaging, you can delete the token from the server
+      // try { await FirebaseMessaging.instance.deleteToken(); } catch (e) {}
+
+      // 3. Reset local variables
+      _accessToken = null;
+      _user = null;
+      _roleType = null;
+      _isLoggedIn = false;
+      _errorMessage = null;
+
+      debugPrint("User logged out and tokens cleared successfully");
+    } catch (e) {
+      debugPrint("Error during logout: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  
   // ---------------- SPLASH CHECK ----------------
   Future<void> checkLoginStatus() async {
     final token = await AuthStorage.getAccessToken();
@@ -103,6 +122,7 @@ class AuthProvider extends ChangeNotifier {
     if (token != null && token.isNotEmpty) {
       _accessToken = token;
       _isLoggedIn = true;
+      // Optional: If you saved the user role/data, load it here too
     } else {
       _isLoggedIn = false;
     }

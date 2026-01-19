@@ -7,8 +7,6 @@ import 'package:hoardlinks/views/home/chitty/runningchitty/runningchitty_bid_scr
 import 'package:provider/provider.dart';
 import 'dart:async';
 
-import 'dart:ui';
-import 'package:flutter/services.dart';
 
 class ChittyDetailsScreen extends StatefulWidget {
   final int chittyId;
@@ -373,14 +371,18 @@ class _ChittyDetailsScreenState extends State<ChittyDetailsScreen> {
         return Colors.blueGrey;
     }
   }
+
+
 Widget _cycleCard(ChittyCycle cycle, Chitty chitty, ChittyMember? member) {
   bool isOpen = cycle.status.toLowerCase() == 'open';
 
   final String chittyId = chitty.id.toString();
-  final String chittyname = chitty.schemeName.toString();
-  final String cycleId = cycle.id.toString(); 
+  final String cycleId = cycle.id.toString();
   final String memberId = member?.id.toString() ?? "N/A";
   final String duration = "${chitty.durationMonths} Months";
+
+  // Formatting the date to a readable string (e.g., 14-01-2026)
+  final String chittyDate = "${chitty.startDate.day.toString().padLeft(2, '0')}-${chitty.startDate.month.toString().padLeft(2, '0')}-${chitty.startDate.year}";
 
   return Container(
     margin: const EdgeInsets.only(bottom: 12, left: 4, right: 4),
@@ -398,39 +400,45 @@ Widget _cycleCard(ChittyCycle cycle, Chitty chitty, ChittyMember? member) {
     ),
     child: ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      leading: CircleAvatar(
-        radius: 25,
-        backgroundColor: _statusColor(cycle.status).withOpacity(0.1),
-        child: Text(
-          cycle.cycleNo.toString(),
-          style: TextStyle(
+      leading: Container(
+        width: 50, // Adjust size if needed
+        height: 50,
+        decoration: BoxDecoration(
+          color: _statusColor(cycle.status).withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: Icon(
+            Icons.attach_money, // Use an appropriate icon for amount
             color: _statusColor(cycle.status),
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
+            size: 24,
           ),
         ),
       ),
       title: Text(
-        "Cycle ${cycle.cycleNo}",
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        "₹${chitty.amount}",
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       ),
-      subtitle: Text(
-        "Chitty Name : $chittyname",
-        style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Chitty Date: $chittyDate",
+            style: TextStyle(color: Colors.black, fontSize: 12),
+          ),
+         
+        ],
       ),
       trailing: isOpen
           ? ElevatedButton(
               onPressed: () async {
-                // 1. Reset the Bid Provider state before opening
                 context.read<ChittyBidProvider>().resetState();
 
-                // 2. Fetch the Auction Data
                 await context.read<AuctionIdProvider>().fetchAuctionBid(
                       int.parse(chittyId),
                       int.parse(cycleId),
                     );
 
-                // 3. Open Bottom Sheet and WAIT for it to close
                 await showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
@@ -443,11 +451,9 @@ Widget _cycleCard(ChittyCycle cycle, Chitty chitty, ChittyMember? member) {
                   ),
                 );
 
-                // 4. REFRESH LOGIC: This executes after the BottomSheet is closed.
-                // We check if the last bid was successful before reloading to save API calls.
                 if (mounted && context.read<ChittyBidProvider>().isBidSuccessful) {
-                   debugPrint("Bid successful, rebuilding details screen...");
-                   context.read<ChittyDetailsProvider>().fetchChittyDetails(widget.chittyId);
+                  debugPrint("Bid successful, rebuilding details screen...");
+                  context.read<ChittyDetailsProvider>().fetchChittyDetails(widget.chittyId);
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -475,6 +481,7 @@ Widget _cycleCard(ChittyCycle cycle, Chitty chitty, ChittyMember? member) {
     ),
   );
 }
+
 
   // 1. Standalone Success Dialog Method
   void _showSuccessDialog(BuildContext context, String message) {
@@ -621,5 +628,3 @@ Widget _cycleCard(ChittyCycle cycle, Chitty chitty, ChittyMember? member) {
     );
   }
 }
-
-

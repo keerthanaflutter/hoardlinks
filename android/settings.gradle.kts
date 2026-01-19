@@ -18,11 +18,25 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "8.7.3" apply false
+    
+    // 1. CHANGE THIS LINE from "8.7.3" to "8.9.1"
+    id("com.android.application") version "8.9.1" apply false
+    
     // START: FlutterFire Configuration
     id("com.google.gms.google-services") version("4.3.15") apply false
     // END: FlutterFire Configuration
+    
+    // Your Kotlin is already at 2.1.0, which is perfect.
     id("org.jetbrains.kotlin.android") version "2.1.0" apply false
 }
+
+// plugins {
+//     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
+//     id("com.android.application") version "8.7.3" apply false
+//     // START: FlutterFire Configuration
+//     id("com.google.gms.google-services") version("4.3.15") apply false
+//     // END: FlutterFire Configuration
+//     id("org.jetbrains.kotlin.android") version "2.1.0" apply false
+// }
 
 include(":app")
