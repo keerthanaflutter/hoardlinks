@@ -4,9 +4,15 @@ import 'package:hoardlinks/views/home/chitty/closedchitty_screen.dart';
 import 'package:hoardlinks/views/home/chitty/open_chitty/openchitty_screen.dart';
 import 'package:hoardlinks/views/home/chitty/runningchitty/runningchitty_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+import 'package:hoardlinks/viewmodels/chittyget_provider.dart';
+import 'package:hoardlinks/views/home/chitty/closedchitty_screen.dart';
+import 'package:hoardlinks/views/home/chitty/open_chitty/openchitty_screen.dart';
+import 'package:hoardlinks/views/home/chitty/runningchitty/runningchitty_screen.dart';
+import 'package:provider/provider.dart';
 
 class ChittyScreen extends StatefulWidget {
-  const ChittyScreen({super.key,});
+  const ChittyScreen({super.key});
 
   @override
   State<ChittyScreen> createState() => _ChittyScreenState();
@@ -18,7 +24,8 @@ class _ChittyScreenState extends State<ChittyScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
+    // Use addPostFrameCallback to ensure the widget tree is built before fetching
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ChittyProvider>().fetchAllChitty();
     });
   }
@@ -52,6 +59,7 @@ class _ChittyScreenState extends State<ChittyScreen> {
               /// 🔴 TAB SCREENS
               const Expanded(
                 child: TabBarView(
+                  // physics: NeverScrollableScrollPhysics(), // Optional: if you want to prevent swiping
                   children: [
                     OpenChittyScreen(),
                     RunningChittyScreen(),

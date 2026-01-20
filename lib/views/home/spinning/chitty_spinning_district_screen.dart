@@ -5,8 +5,8 @@ import 'package:hoardlinks/viewmodels/chitty_agency_district_provider.dart';
 import 'package:hoardlinks/views/home/spinning/advance_serch_widet.dart';
 import 'package:hoardlinks/views/home/spinning/agency_details_screen.dart';
 import 'package:provider/provider.dart';
-
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shimmer/shimmer.dart'; // Ensure package is imported
 
 class DistrictSearchTab extends StatefulWidget {
   const DistrictSearchTab({super.key});
@@ -25,7 +25,6 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
         context.read<ChittyDistrictAgencyProvider>().fetchAgencies());
   }
 
-  // Helper to launch phone dialer from the list
   Future<void> _makePhoneCall(String? phoneNumber) async {
     if (phoneNumber == null || phoneNumber.isEmpty) return;
     final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
@@ -55,6 +54,7 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
     final provider = context.watch<ChittyDistrictAgencyProvider>();
 
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
@@ -97,8 +97,9 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
   }
 
   Widget _buildBody(ChittyDistrictAgencyProvider provider) {
+    // Replacement: Instead of CircularProgressIndicator, use Shimmer
     if (provider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return _buildShimmerLoading();
     }
 
     if (provider.error != null) {
@@ -121,7 +122,6 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
         final agency = filteredAgencies[index];
         return ListTile(
           onTap: () {
-            // Navigate to Details Screen passing the ID
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -163,6 +163,47 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
           ),
         );
       },
+    );
+  }
+
+  // Helper method to build the Shimmer Loading Skeleton
+  Widget _buildShimmerLoading() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: ListView.separated(
+        itemCount: 8, // Show 8 placeholder items
+        separatorBuilder: (context, index) => const Divider(height: 1, thickness: 1),
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
+              children: [
+                // Avatar Placeholder
+                const CircleAvatar(radius: 28, backgroundColor: Colors.white),
+                const SizedBox(width: 16),
+                // Text Column Placeholder
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(width: 150, height: 18, color: Colors.white),
+                      const SizedBox(height: 8),
+                      Container(width: 100, height: 14, color: Colors.white),
+                      const SizedBox(height: 4),
+                      Container(width: 180, height: 13, color: Colors.white),
+                    ],
+                  ),
+                ),
+                // Icon Placeholder
+                const Icon(Icons.call, color: Colors.white, size: 26),
+                const SizedBox(width: 8),
+                const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

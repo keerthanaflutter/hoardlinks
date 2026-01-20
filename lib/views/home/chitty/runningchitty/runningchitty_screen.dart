@@ -4,20 +4,52 @@ import 'package:flutter/material.dart';
 import 'package:hoardlinks/viewmodels/chittyget_provider.dart';
 import 'package:hoardlinks/views/home/chitty/chittydetails_screen.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
+// Import your provider, card, and detail screen paths here
 
-class RunningChittyScreen extends StatelessWidget {
+class RunningChittyScreen extends StatefulWidget {
   const RunningChittyScreen({super.key});
+
+  @override
+  State<RunningChittyScreen> createState() => _RunningChittyScreenState();
+}
+
+class _RunningChittyScreenState extends State<RunningChittyScreen> {
+  bool _timerActive = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Force the shimmer to show for exactly 3 seconds on first load
+    Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          _timerActive = false;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ChittyProvider>(
       builder: (context, provider, _) {
-        final list = provider.chittyResponse?.running ?? [];
-
-        if (list.isEmpty) {
-          return const Center(child: Text('No Running Chitty'));
+        // Show shimmer if API is loading OR our 3s timer is still running
+        if (provider.isLoading || _timerActive) {
+          return _buildShimmerLoading();
         }
 
+        final list = provider.chittyResponse?.running ?? [];
+
+        // Attractive Empty State
+        if (list.isEmpty) {
+          return _buildEmptyState();
+        }
+
+        // Main List
         return ListView.builder(
           padding: const EdgeInsets.all(12),
           itemCount: list.length,
@@ -31,7 +63,7 @@ class RunningChittyScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (_) => ChittyDetailsScreen(
-                      chittyId: item.id, // ✅ CORRECT
+                      chittyId: item.id,
                     ),
                   ),
                 );
@@ -46,9 +78,118 @@ class RunningChittyScreen extends StatelessWidget {
       },
     );
   }
+
+  /// Attractive Empty State UI
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(25),
+            decoration: BoxDecoration(
+              color: Colors.green.withOpacity(0.1), // Using Green for Running Tab
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.trending_up_rounded, // Relevant icon for "Running"
+              size: 70,
+              color: Colors.green,
+            ),
+          ),
+          const SizedBox(height: 24),
+          const Text(
+            'No Active Chitties',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              'You don’t have any chitties running right now. Join an open chitty to get started!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.grey,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Shimmer Skeleton Loader
+  Widget _buildShimmerLoading() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      period: const Duration(milliseconds: 1500),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: 5,
+        itemBuilder: (_, __) => Padding(
+          padding: const EdgeInsets.only(bottom: 16.0),
+          child: Container(
+            height: 140, // Match your RunningChittyCard height
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 55, 
+                        height: 55, 
+                        decoration: BoxDecoration(
+                          color: Colors.white, 
+                          borderRadius: BorderRadius.circular(12)
+                        )
+                      ),
+                      const SizedBox(width: 15),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(width: 160, height: 18, color: Colors.white),
+                          const SizedBox(height: 10),
+                          Container(width: 90, height: 14, color: Colors.white),
+                        ],
+                      )
+                    ],
+                  ),
+                  const Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(width: 110, height: 14, color: Colors.white),
+                      Container(
+                        width: 70, 
+                        height: 30, 
+                        decoration: BoxDecoration(
+                          color: Colors.white, 
+                          borderRadius: BorderRadius.circular(8)
+                        )
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
-
-
 
 
 

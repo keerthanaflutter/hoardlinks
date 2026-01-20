@@ -1,11 +1,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:hoardlinks/core/constants/banner_const.dart';
+import 'package:hoardlinks/views/dashboard/drawer_widget.dart';
 import 'package:hoardlinks/views/home/chitty/chittylist_screen.dart';
 import 'package:hoardlinks/views/home/home_screen.dart';
 import 'package:hoardlinks/views/home/profile/profile_screen.dart';
 import 'package:hoardlinks/views/home/spinning/chitty_spinning_screen.dart';
 
+import 'package:flutter/material.dart';
 
 class DashboardScreen extends StatefulWidget {
   final int selectedIndex;
@@ -50,49 +52,54 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false, // Prevents the BNB from shifting when the keyboard appears
+      resizeToAvoidBottomInset: false,
+      // --- THE DRAWER ---
+      drawer: CustomDrawer(),
       appBar: AppBar(
-        leadingWidth: size.width * 0.22,
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: Padding(
-          padding: EdgeInsets.only(left: size.width * 0.03),
-          child: Image.asset("assets/images/kaia_logo.png",
-              width: size.width * 0.18, fit: BoxFit.contain),
+        centerTitle: false, // Keeps logo on the left side
+        // --- 1. SEPARATE DRAWER ICON ---
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: Colors.black, size: 28),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+        // --- 2. LOGO MOVED TO TITLE ---
+        titleSpacing: 0, // Removes gap between menu icon and logo
+        title: Image.asset(
+          "assets/images/kaia_logo.png",
+          height: 35, // Adjusted size to fit nicely in AppBar
+          fit: BoxFit.contain,
         ),
         actions: [
-          // Profile Icon in the AppBar
           Padding(
-            padding: EdgeInsets.only(right: size.width * 0.07),
+            padding: EdgeInsets.only(right: size.width * 0.05),
             child: GestureDetector(
               onTap: () {
-                // Navigate to Profile Screen when tapped
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) =>  ProfileScreen()),
+                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
                 );
               },
               child: const Icon(Icons.account_circle, color: Colors.black, size: 30),
             ),
           ),
-          // Notifications Icon
           Padding(
-            padding: EdgeInsets.only(right: size.width * 0.07),
+            padding: EdgeInsets.only(right: size.width * 0.05),
             child: const Icon(Icons.notifications, color: Colors.black, size: 30),
           ),
         ],
       ),
       body: Stack(
         children: [
-          /// 🔹 SCREEN CONTENT (The background screens)
           Positioned.fill(
             child: IndexedStack(
               index: _selectedIndex,
               children: _pages,
             ),
           ),
-
-          /// 🔴 BANNER (Only visible when Home Screen is selected)
           if (_selectedIndex == 1)
             Positioned(
               left: 0,
@@ -105,8 +112,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
             ),
-
-          /// 🔻 BOTTOM NAV BAR
           Positioned(
             left: 20,
             right: 20,
@@ -116,7 +121,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  /// NAVIGATION BAR BACKGROUND
                   Container(
                     height: 60,
                     padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -147,8 +151,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ],
                     ),
                   ),
-
-                  /// 🔴 MOVING CIRCLE INDICATOR
                   AnimatedAlign(
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOut,
@@ -215,3 +217,4 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
+

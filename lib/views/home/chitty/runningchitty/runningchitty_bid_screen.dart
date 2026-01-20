@@ -143,8 +143,7 @@ class _BidPopupBottomSheetState extends State<BidPopupBottomSheet> {
                 Wrap(
                   spacing: 10,
                   children: [
-                    // _infoChip("Auction ID: ${bidData.id}"),
-                    // _infoChip("Duration: ${widget.duration}"),
+                   
                   ],
                 ),
                 const SizedBox(height: 20),

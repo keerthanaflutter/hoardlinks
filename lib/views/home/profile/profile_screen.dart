@@ -844,21 +844,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Logout"),
-        content: const Text("Are you sure you want to logout?"),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        title: const Text("Sign Out", style: TextStyle(fontWeight: FontWeight.bold)),
+        content: const Text("Are you sure you want to end your session?"),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Not know", style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFB11226),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
             onPressed: () async {
               Navigator.pop(context);
               await authProvider.logout();
-              Navigator.pushAndRemoveUntil(
-                context, 
-                MaterialPageRoute(builder: (context) => const LoginScreen()), 
-                (route) => false
-              );
+              if (context.mounted) {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
             },
-            child: Text("Logout", style: TextStyle(color: primaryColor)),
+            child: const Text("Logout", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

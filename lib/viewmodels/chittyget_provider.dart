@@ -3,69 +3,53 @@ import 'package:flutter/material.dart';
 import 'package:hoardlinks/core/constants/loginToken_constant.dart';
 import 'package:hoardlinks/data/models/chittylist_model.dart';
 import 'package:http/http.dart' as http;
-
 class ChittyProvider extends ChangeNotifier {
   bool _isLoading = false;
-  String? _error;
   ChittyResponseModel? _chittyResponse;
+  String? _error;
 
   bool get isLoading => _isLoading;
-  String? get error => _error;
   ChittyResponseModel? get chittyResponse => _chittyResponse;
-
-  get errorMessage => null;
+  String? get error => _error;
 
   Future<void> fetchAllChitty() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
-    const url =
-        'https://hoardlinks-backend.onrender.com/api/v1/chitty/getAllChitty';
+    const url = 'https://hoardlinks-backend.onrender.com/api/v1/chitty/getAllChitty';
 
     try {
-      /// ✅ GET TOKEN FROM STORAGE
       final token = await AuthStorage.getAccessToken();
-
       if (token == null) {
-        _error = "Token not found. Please login again.";
+        _error = "Token not found";
         _isLoading = false;
         notifyListeners();
         return;
       }
 
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {
+      // 🔥 Force the UI to wait for at least 3 seconds 
+      // even if the API responds instantly.
+      final results = await Future.wait([
+        http.get(Uri.parse(url), headers: {
           "Content-Type": "application/json",
-          "access_token": token, // ✅ DYNAMIC TOKEN
-        },
-      );
+          "access_token": token,
+        }),
+        Future.delayed(const Duration(seconds: 3)), // The 3s shimmer lock
+      ]);
 
-      print('STATUS CODE: ${response.statusCode}');
-      print('RAW RESPONSE: ${response.body}');
+      final response = results[0] as http.Response;
 
       if (response.statusCode == 200) {
-        final decoded = jsonDecode(response.body);
-
-        _chittyResponse = ChittyResponseModel.fromJson(decoded);
-
-        /// 🔥 DEBUG PRINTS
-        print('MESSAGE: ${_chittyResponse!.message}');
-        print('OPEN COUNT: ${_chittyResponse!.open.length}');
-        print('RUNNING COUNT: ${_chittyResponse!.running.length}');
-        print('CLOSED COUNT: ${_chittyResponse!.closed.length}');
-      } else if (response.statusCode == 401) {
-        _error = "Session expired. Please login again.";
+        _chittyResponse = ChittyResponseModel.fromJson(jsonDecode(response.body));
       } else {
-        _error = "Failed to fetch chitty list";
+        _error = "Failed to fetch data";
       }
     } catch (e) {
       _error = e.toString();
-      print('ERROR: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
-    _isLoading = false;
-    notifyListeners();
   }
 }
