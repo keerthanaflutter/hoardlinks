@@ -18,7 +18,7 @@ class DistrictGetProvider with ChangeNotifier {
     // We notify listeners immediately to show the loading spinner in the UI
     notifyListeners();
 
-    final url = Uri.parse("https://hoardlinks-backend.onrender.com/api/v1/district/getAll");
+    final url = Uri.parse("http://hoardlinks.controlroom.cordsinnovations.com/api/v1/district/getAll");
 
     try {
       final response = await http.get(

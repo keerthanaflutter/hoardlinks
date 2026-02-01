@@ -7,7 +7,7 @@ import 'package:hoardlinks/data/models/login_response.dart';
 import 'package:http/http.dart' as http;
 
 class AuthProvider extends ChangeNotifier {
-  final String _loginUrl = "https://hoardlinks-backend.onrender.com/api/v1/auth/login";
+  final String _loginUrl = "http://hoardlinks.controlroom.cordsinnovations.com/api/v1/auth/login";
 
   bool _isLoading = false;
   bool _isLoggedIn = false;

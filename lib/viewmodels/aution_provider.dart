@@ -20,7 +20,7 @@ class AuctionIdProvider with ChangeNotifier {
     notifyListeners();
 
     final url =
-        'https://hoardlinks-backend.onrender.com/api/v1/chitty/get/chittyAuctionBidId/$chittyId/$cycleId';
+        'http://hoardlinks.controlroom.cordsinnovations.com/api/v1/chitty/get/chittyAuctionBidId/$chittyId/$cycleId';
 
     try {
       final token = await AuthStorage.getAccessToken();

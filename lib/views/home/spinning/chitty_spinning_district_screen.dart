@@ -6,7 +6,7 @@ import 'package:hoardlinks/views/home/spinning/advance_serch_widet.dart';
 import 'package:hoardlinks/views/home/spinning/agency_details_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:shimmer/shimmer.dart'; // Ensure package is imported
+import 'package:shimmer/shimmer.dart'; 
 
 class DistrictSearchTab extends StatefulWidget {
   const DistrictSearchTab({super.key});
@@ -21,6 +21,7 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
   @override
   void initState() {
     super.initState();
+    // Fetch agencies on load
     Future.microtask(() =>
         context.read<ChittyDistrictAgencyProvider>().fetchAgencies());
   }
@@ -45,7 +46,8 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => const AdvancedFilterSheet(),
+      builder: (context) => AdvancedFilterSheet(),
+      // Replace with your AdvancedFilterSheet() widget
     );
   }
 
@@ -69,7 +71,7 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
                   child: TextField(
                     onChanged: (value) => setState(() => searchQuery = value),
                     decoration: InputDecoration(
-                      hintText: 'Search...',
+                      hintText: 'Search by Name or Contact...',
                       hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 16),
                       border: InputBorder.none,
                     ),
@@ -81,7 +83,7 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.send, color: Color(0xFFCF202E)),
-                  onPressed: () {}, 
+                  onPressed: () {},
                 ),
               ],
             ),
@@ -97,7 +99,6 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
   }
 
   Widget _buildBody(ChittyDistrictAgencyProvider provider) {
-    // Replacement: Instead of CircularProgressIndicator, use Shimmer
     if (provider.isLoading) {
       return _buildShimmerLoading();
     }
@@ -106,10 +107,13 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
       return Center(child: Text(provider.error!));
     }
 
-    final filteredAgencies = provider.agencies
-        .where((agency) =>
-            agency.legalName.toLowerCase().contains(searchQuery.toLowerCase()))
-        .toList();
+    // Updated Filtering logic to include Trade Name and Contact Person
+    final filteredAgencies = provider.agencies.where((agency) {
+      final query = searchQuery.toLowerCase();
+      return agency.legalName.toLowerCase().contains(query) ||
+             agency.tradeName.toLowerCase().contains(query) ||
+             agency.contactPerson.toLowerCase().contains(query);
+    }).toList();
 
     if (filteredAgencies.isEmpty) {
       return const Center(child: Text("No agencies found."));
@@ -132,23 +136,46 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           leading: const CircleAvatar(
             radius: 28,
-            backgroundColor: Colors.grey,
+            backgroundColor: Color(0xFFF5F5F5),
             backgroundImage: NetworkImage('https://via.placeholder.com/150'),
           ),
           title: Text(
-            agency.legalName,
+            agency.legalName, // 1. Legal Name
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
                 color: Color(0xFFCF202E),
                 fontWeight: FontWeight.bold,
-                fontSize: 18),
+                fontSize: 17),
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(agency.tradeName,
-                  style: const TextStyle(color: Colors.black87, fontSize: 14)),
-              Text(agency.contactEmail,
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+              const SizedBox(height: 2),
+              // 2. Trade Name
+              Text(
+                agency.tradeName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                    color: Colors.black87, 
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14),
+              ),
+              const SizedBox(height: 2),
+              // 3. Contact Person (Replaced Email)
+              Row(
+                children: [
+                  Icon(Icons.person_outline, size: 14, color: Colors.grey.shade600),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      agency.contactPerson,
+                      style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
           trailing: Row(
@@ -158,7 +185,7 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
                 icon: const Icon(Icons.call, color: Colors.green, size: 26),
                 onPressed: () => _makePhoneCall(agency.contactPhone),
               ),
-              const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFFCF202E)),
+              const Icon(Icons.arrow_forward_ios, size: 14, color: Color(0xFFCF202E)),
             ],
           ),
         );
@@ -166,23 +193,20 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
     );
   }
 
-  // Helper method to build the Shimmer Loading Skeleton
   Widget _buildShimmerLoading() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
       child: ListView.separated(
-        itemCount: 8, // Show 8 placeholder items
+        itemCount: 8,
         separatorBuilder: (context, index) => const Divider(height: 1, thickness: 1),
         itemBuilder: (context, index) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
-                // Avatar Placeholder
                 const CircleAvatar(radius: 28, backgroundColor: Colors.white),
                 const SizedBox(width: 16),
-                // Text Column Placeholder
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,11 +215,10 @@ class _DistrictSearchTabState extends State<DistrictSearchTab> {
                       const SizedBox(height: 8),
                       Container(width: 100, height: 14, color: Colors.white),
                       const SizedBox(height: 4),
-                      Container(width: 180, height: 13, color: Colors.white),
+                      Container(width: 130, height: 13, color: Colors.white),
                     ],
                   ),
                 ),
-                // Icon Placeholder
                 const Icon(Icons.call, color: Colors.white, size: 26),
                 const SizedBox(width: 8),
                 const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white),

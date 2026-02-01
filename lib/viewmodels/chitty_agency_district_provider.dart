@@ -36,7 +36,7 @@ class ChittyDistrictAgencyProvider with ChangeNotifier {
       };
 
       final url =
-          'https://hoardlinks-backend.onrender.com/api/v1/agency/agencies/state/$stateId/district/$districtId?page=1&limit=20';
+          'http://hoardlinks.controlroom.cordsinnovations.com/api/v1/agency/agencies/state/$stateId/district/$districtId?page=1&limit=20';
       final response = await http.get(Uri.parse(url), headers: headers);
 
       if (response.statusCode == 200) {

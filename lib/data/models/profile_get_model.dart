@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 class Profile {
   final int id;
   final String loginId;
@@ -8,6 +7,7 @@ class Profile {
   final int stateId;
   final int districtId;
   final int agencyId;
+  final String? imgUrl; // Added this field
   final bool isActive;
   final String? lastLoginAt;
   final String createdAt;
@@ -24,6 +24,7 @@ class Profile {
     required this.stateId,
     required this.districtId,
     required this.agencyId,
+    this.imgUrl, // Included in constructor
     required this.isActive,
     this.lastLoginAt,
     required this.createdAt,
@@ -36,20 +37,21 @@ class Profile {
   // From JSON
   factory Profile.fromJson(Map<String, dynamic> json) {
     return Profile(
-      id: json['id'],
-      loginId: json['login_id'],
-      mobileNumber: json['mobile_number'],
-      roleType: json['role_type'],
-      stateId: json['state_id'],
-      districtId: json['district_id'],
-      agencyId: json['agency_id'],
-      isActive: json['is_active'],
+      id: json['id'] ?? 0,
+      loginId: json['login_id'] ?? '',
+      mobileNumber: json['mobile_number'] ?? '',
+      roleType: json['role_type'] ?? '',
+      stateId: json['state_id'] ?? 0,
+      districtId: json['district_id'] ?? 0,
+      agencyId: json['agency_id'] ?? 0,
+      imgUrl: json['img_url'], // Map the img_url from JSON
+      isActive: json['is_active'] ?? false,
       lastLoginAt: json['last_login_at'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
-      stateCommittee: StateCommittee.fromJson(json['state_committee']),
-      districtCommittee: DistrictCommittee.fromJson(json['district_committee']),
-      agencyMember: AgencyMember.fromJson(json['agency_member']),
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
+      stateCommittee: StateCommittee.fromJson(json['state_committee'] ?? {}),
+      districtCommittee: DistrictCommittee.fromJson(json['district_committee'] ?? {}),
+      agencyMember: AgencyMember.fromJson(json['agency_member'] ?? {}),
     );
   }
 
@@ -63,6 +65,7 @@ class Profile {
       'state_id': stateId,
       'district_id': districtId,
       'agency_id': agencyId,
+      'img_url': imgUrl, // Added to JSON map
       'is_active': isActive,
       'last_login_at': lastLoginAt,
       'created_at': createdAt,
@@ -87,9 +90,9 @@ class StateCommittee {
 
   factory StateCommittee.fromJson(Map<String, dynamic> json) {
     return StateCommittee(
-      id: json['id'],
-      stateName: json['state_name'],
-      stateCode: json['state_code'],
+      id: json['id'] ?? 0,
+      stateName: json['state_name'] ?? '',
+      stateCode: json['state_code'] ?? '',
     );
   }
 
@@ -113,8 +116,8 @@ class DistrictCommittee {
 
   factory DistrictCommittee.fromJson(Map<String, dynamic> json) {
     return DistrictCommittee(
-      id: json['id'],
-      districtName: json['district_name'],
+      id: json['id'] ?? 0,
+      districtName: json['district_name'] ?? '',
     );
   }
 
@@ -139,9 +142,9 @@ class AgencyMember {
 
   factory AgencyMember.fromJson(Map<String, dynamic> json) {
     return AgencyMember(
-      id: json['id'],
-      legalName: json['legal_name'],
-      tradeName: json['trade_name'],
+      id: json['id'] ?? 0,
+      legalName: json['legal_name'] ?? '',
+      tradeName: json['trade_name'] ?? '',
     );
   }
 

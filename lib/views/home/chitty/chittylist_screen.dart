@@ -4,12 +4,6 @@ import 'package:hoardlinks/views/home/chitty/closedchitty_screen.dart';
 import 'package:hoardlinks/views/home/chitty/open_chitty/openchitty_screen.dart';
 import 'package:hoardlinks/views/home/chitty/runningchitty/runningchitty_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/material.dart';
-import 'package:hoardlinks/viewmodels/chittyget_provider.dart';
-import 'package:hoardlinks/views/home/chitty/closedchitty_screen.dart';
-import 'package:hoardlinks/views/home/chitty/open_chitty/openchitty_screen.dart';
-import 'package:hoardlinks/views/home/chitty/runningchitty/runningchitty_screen.dart';
-import 'package:provider/provider.dart';
 
 class ChittyScreen extends StatefulWidget {
   const ChittyScreen({super.key});

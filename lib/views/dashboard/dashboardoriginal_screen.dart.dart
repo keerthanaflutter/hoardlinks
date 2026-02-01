@@ -1,17 +1,12 @@
-
 import 'package:flutter/material.dart';
-import 'package:hoardlinks/core/constants/banner_const.dart';
 import 'package:hoardlinks/views/dashboard/drawer_widget.dart';
 import 'package:hoardlinks/views/home/chitty/chittylist_screen.dart';
 import 'package:hoardlinks/views/home/home_screen.dart';
 import 'package:hoardlinks/views/home/profile/profile_screen.dart';
 import 'package:hoardlinks/views/home/spinning/chitty_spinning_screen.dart';
 
-import 'package:flutter/material.dart';
-
 class DashboardScreen extends StatefulWidget {
   final int selectedIndex;
-
   const DashboardScreen({super.key, this.selectedIndex = 1});
 
   @override
@@ -19,15 +14,22 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  int _selectedIndex = 1;
+  late int _selectedIndex;
 
-  // The pages used in the IndexedStack
+  // 1. THE SCREENS MAPPED TO NAVIGATION
   final List<Widget> _pages = [
     const BniSearchScreen(),
     const HomeScreen(),
     const ChittyScreen(),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.selectedIndex;
+  }
+
+  // Logic for the floating circle position
   Alignment _getAlignment() {
     switch (_selectedIndex) {
       case 0:
@@ -42,36 +44,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _selectedIndex = widget.selectedIndex;
-  }
-
-  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
+
       // --- THE DRAWER ---
-      drawer: CustomDrawer(),
+      drawer: const CustomDrawer(),
+
+      // --- THE APPBAR ---
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        centerTitle: false, // Keeps logo on the left side
-        // --- 1. SEPARATE DRAWER ICON ---
+        centerTitle: false,
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu, color: Colors.black, size: 28),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
-        // --- 2. LOGO MOVED TO TITLE ---
-        titleSpacing: 0, // Removes gap between menu icon and logo
-        title: Image.asset(
-          "assets/images/kaia_logo.png",
-          height: 35, // Adjusted size to fit nicely in AppBar
-          fit: BoxFit.contain,
+        titleSpacing: 0,
+        title: GestureDetector(
+          onTap: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => HomeScreen()));
+          },
+          child: Image.asset(
+            "assets/images/kaia_logo.png",
+            height: 35,
+            fit: BoxFit.contain,
+          ),
         ),
         actions: [
           Padding(
@@ -80,113 +85,138 @@ class _DashboardScreenState extends State<DashboardScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
                 );
               },
-              child: const Icon(Icons.account_circle, color: Colors.black, size: 30),
+              child: const Icon(
+                Icons.account_circle,
+                color: Colors.black,
+                size: 30,
+              ),
             ),
           ),
           Padding(
             padding: EdgeInsets.only(right: size.width * 0.05),
-            child: const Icon(Icons.notifications, color: Colors.black, size: 30),
+            child: const Icon(
+              Icons.notifications,
+              color: Colors.black,
+              size: 30,
+            ),
           ),
         ],
       ),
+
       body: Stack(
         children: [
-          Positioned.fill(
-            child: IndexedStack(
-              index: _selectedIndex,
-              children: _pages,
-            ),
-          ),
-          if (_selectedIndex == 1)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: SizedBox(
-                height: size.height * 0.30,
-                child: CustomPaint(
-                  painter: BottomBannerPainter(),
-                ),
+          /// --- LAYER 1: THE BOTTOM BANNER IMAGE ---
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: SizedBox(
+              width: size.width,
+              height: size.height * 0.60,
+              child: Image.asset(
+                "assets/images/banner.jpg",
+                alignment: Alignment.bottomCenter,
+                fit: BoxFit.cover,
               ),
             ),
+          ),
+
+          /// --- LAYER 2: THE FULL SCREEN GREY OVERLAY ---
+          Positioned.fill(
+            child: Container(
+              color: const Color.fromARGB(255, 241, 241, 241).withOpacity(0.5),
+            ),
+          ),
+
+          /// --- LAYER 3: THE ACTUAL CONTENT SCREENS ---
+          Positioned.fill(
+            child: IndexedStack(index: _selectedIndex, children: _pages),
+          ),
+
+          /// --- LAYER 4: CUSTOM BOTTOM NAVIGATION BAR ---
           Positioned(
             left: 20,
             right: 20,
             bottom: 20,
-            child: SizedBox(
-              height: 80,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    height: 60,
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40),
-                      gradient: const LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          Color(0xFFB11226),
-                          Color.fromARGB(255, 99, 82, 84),
-                        ],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
+            child: _buildBottomNavigationBar(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Refactored Bottom Navigation Bar Widget
+  Widget _buildBottomNavigationBar() {
+    return SizedBox(
+      height: 80,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Background Bar
+          Container(
+            height: 60,
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(40),
+              gradient: const LinearGradient(
+                colors: [Color(0xFFB11226), Color.fromARGB(255, 99, 82, 84)],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _navItemAsset("assets/images/kaia_logo.png", 0),
+                _navItemAsset("assets/images/house.png", 1),
+                _navItemAsset("assets/images/chittyicon.png", 2),
+              ],
+            ),
+          ),
+
+          // Sliding Selector Circle
+          AnimatedAlign(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            alignment: _getAlignment(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22),
+              child: Container(
+                height: 70,
+                width: 70,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 155, 69, 80),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.4),
+                      blurRadius: 10,
+                      offset: const Offset(0, 6),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _pngIcon("assets/images/kaia_logo.png", 0),
-                        _buildPngIcon("assets/images/house.png", 1),
-                        _buildPngIcon("assets/images/user.png", 2),
-                      ],
-                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Image.asset(
+                    _selectedIndex == 0
+                        ? "assets/images/kaia_logo.png"
+                        : _selectedIndex == 1
+                        ? "assets/images/house.png"
+                        : "assets/images/chittyicon.png",
+                    height: 28,
+                    width: 28,
+                    color: Colors.white,
                   ),
-                  AnimatedAlign(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeOut,
-                    alignment: _getAlignment(),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 22),
-                      child: Container(
-                        height: 70,
-                        width: 70,
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 155, 69, 80),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.4),
-                              blurRadius: 10,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Image.asset(
-                            _selectedIndex == 0
-                                ? "assets/images/kaia_logo.png"
-                                : _selectedIndex == 1
-                                    ? "assets/images/house.png"
-                                    : "assets/images/user.png",
-                            height: 28,
-                            width: 28,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -195,26 +225,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildPngIcon(String asset, int index) {
+  // Nav Item Helper
+  Widget _navItemAsset(String asset, int index) {
+    bool isSelected = _selectedIndex == index;
     return GestureDetector(
       onTap: () => setState(() => _selectedIndex = index),
-      child: Image.asset(
-        asset,
-        height: 26,
-        color: Colors.white70,
-      ),
-    );
-  }
-
-  Widget _pngIcon(String asset, int index) {
-    return GestureDetector(
-      onTap: () => setState(() => _selectedIndex = index),
-      child: Image.asset(
-        asset,
-        height: 26,
-        color: Colors.white,
+      child: Opacity(
+        opacity: isSelected
+            ? 0.0
+            : 1.0, // Hide the icon in the bar if the circle is over it
+        child: Image.asset(asset, height: 26, color: Colors.white70),
       ),
     );
   }
 }
-

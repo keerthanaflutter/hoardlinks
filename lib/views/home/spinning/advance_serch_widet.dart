@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hoardlinks/data/models/chitty_agency_district_model.dart';
 import 'package:hoardlinks/viewmodels/advanced_serch_provider.dart';
 import 'package:hoardlinks/viewmodels/district_get_provider.dart';
 import 'package:hoardlinks/views/home/spinning/agency_details_screen.dart';
@@ -7,9 +6,6 @@ import 'package:provider/provider.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AdvancedFilterSheet extends StatefulWidget {
   const AdvancedFilterSheet({super.key});
@@ -19,7 +15,11 @@ class AdvancedFilterSheet extends StatefulWidget {
 }
 
 class _AdvancedFilterSheetState extends State<AdvancedFilterSheet> {
-  final TextEditingController _firstNameController = TextEditingController();
+  // Controllers for the three search fields
+  final TextEditingController _tradeNameController = TextEditingController();
+  final TextEditingController _companyNameController = TextEditingController(); // Maps to legal_name
+  final TextEditingController _nameController = TextEditingController(); // Maps to queryName (q)
+  
   int? _selectedDistrictId;
 
   @override
@@ -33,7 +33,9 @@ class _AdvancedFilterSheetState extends State<AdvancedFilterSheet> {
 
   @override
   void dispose() {
-    _firstNameController.dispose();
+    _tradeNameController.dispose();
+    _companyNameController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -42,12 +44,8 @@ class _AdvancedFilterSheetState extends State<AdvancedFilterSheet> {
     Navigator.pop(context);
   }
 
-  // 🔥 Working Phone Dialer Logic
   Future<void> _makePhoneCall(String phoneNumber) async {
-    final Uri launchUri = Uri(
-      scheme: 'tel',
-      path: phoneNumber,
-    );
+    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
     try {
       if (await canLaunchUrl(launchUri)) {
         await launchUrl(launchUri);
@@ -95,10 +93,22 @@ class _AdvancedFilterSheetState extends State<AdvancedFilterSheet> {
                         _buildHeader(context),
                         const SizedBox(height: 20),
                         _buildSectionTitle("Search Parameters"),
+                        
                         _buildDistrictDropdown(),
                         const SizedBox(height: 16),
-                        _buildFilterField("Agency Name", _firstNameController),
+                        
+                        // 1. Name Field (General Query)
+                        _buildFilterField("Name", _nameController),
+                        const SizedBox(height: 16),
+                        
+                        // 2. Trade Name Field
+                        _buildFilterField("Trade Name", _tradeNameController),
+                        const SizedBox(height: 16),
+                        
+                        // 3. Company Name Field (Legal Name)
+                        _buildFilterField("Company Name", _companyNameController),
                         const SizedBox(height: 20),
+                        
                         _buildSearchButton(searchProvider),
                         const SizedBox(height: 30),
                         const Divider(),
@@ -112,6 +122,40 @@ class _AdvancedFilterSheetState extends State<AdvancedFilterSheet> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildSearchButton(AdvanceSearchProvider searchProvider) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFCF202E),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        onPressed: searchProvider.isLoading
+            ? null
+            : () async {
+                // Triggering the provider with all parameters
+                await searchProvider.performAdvancedSearch(
+                  queryName: _nameController.text.trim(),
+                  tradeName: _tradeNameController.text.trim(),
+                  legalName: _companyNameController.text.trim(),
+                  customDistrictId: _selectedDistrictId,
+                );
+              },
+        child: searchProvider.isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+              )
+            : const Text(
+                "SEARCH NOW",
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
       ),
     );
   }
@@ -147,12 +191,11 @@ class _AdvancedFilterSheetState extends State<AdvancedFilterSheet> {
       itemCount: provider.searchResults.length,
       separatorBuilder: (context, index) => const Divider(),
       itemBuilder: (context, index) {
-        final Agency agency = provider.searchResults[index];
+        final agency = provider.searchResults[index];
 
         return ListTile(
           contentPadding: EdgeInsets.zero,
           onTap: () {
-            // 🔥 Passing only the agencyId to the detail screen
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -180,37 +223,6 @@ class _AdvancedFilterSheetState extends State<AdvancedFilterSheet> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildSearchButton(AdvanceSearchProvider searchProvider) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFCF202E),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        onPressed: searchProvider.isLoading
-            ? null
-            : () async {
-                await searchProvider.performAdvancedSearch(
-                  queryName: _firstNameController.text.trim(),
-                  customDistrictId: _selectedDistrictId,
-                );
-              },
-        child: searchProvider.isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-              )
-            : const Text(
-                "SEARCH NOW",
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-      ),
     );
   }
 
@@ -283,8 +295,11 @@ class _AdvancedFilterSheetState extends State<AdvancedFilterSheet> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: const TextStyle(fontSize: 13),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       ),
     );
   }
 }
+

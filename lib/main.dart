@@ -15,6 +15,7 @@ import 'package:hoardlinks/viewmodels/chittyscheem_get_provider.dart';
 import 'package:hoardlinks/viewmodels/district_get_provider.dart';
 import 'package:hoardlinks/viewmodels/emialotp_get_provider.dart';
 import 'package:hoardlinks/viewmodels/forgotpassword_prvoder.dart';
+import 'package:hoardlinks/viewmodels/profileimage_provider.dart';
 import 'package:hoardlinks/viewmodels/rest_password_provider.dart';
 import 'package:hoardlinks/viewmodels/profile_provder.dart';
 import 'package:hoardlinks/viewmodels/profile_update_provider.dart';
@@ -63,6 +64,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AgencyDetailprovider()),
         ChangeNotifierProvider(create: (_) => EmailOtpGetProvider()),
         ChangeNotifierProvider(create: (_) => ForgotPasswordProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileImageUploadProvider()),
       ],
       child: MaterialApp(
         navigatorKey: AppNavigator.navigatorKey, // ⭐ REQUIRED

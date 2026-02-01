@@ -51,7 +51,7 @@ class ChittyBidProvider extends ChangeNotifier {
         "bid_amount": bidAmount,
       });
 
-      final url = Uri.parse('https://hoardlinks-backend.onrender.com/api/v1/chitty/chitty_auction_bid');
+      final url = Uri.parse('http://hoardlinks.controlroom.cordsinnovations.com/api/v1/chitty/chitty_auction_bid');
       
       // Print Request Details
       debugPrint("--- SENDING BID REQUEST ---");

@@ -58,8 +58,9 @@ class _BniSearchScreenState extends State<BniSearchScreen>
               unselectedLabelColor: const Color(0xFFCF202E),
               labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
               tabs: const [
-                Tab(child: Center(child: Text('STATE SEARCH'))),
                 Tab(child: Center(child: Text('DISTRICT SEARCH'))),
+                Tab(child: Center(child: Text('STATE SEARCH'))),
+               
               ],
             ),
           ),
@@ -72,8 +73,9 @@ class _BniSearchScreenState extends State<BniSearchScreen>
               controller: _tabController,
               children: [
                 // Replace these with your actual Tab Widgets
+                 DistrictSearchTab(),
                  SetStateSearchTab(),
-                DistrictSearchTab(),
+
                
               ],
             ),

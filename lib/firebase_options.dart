@@ -67,7 +67,7 @@ class DefaultFirebaseOptions {
     projectId: 'pushnotification-1a017',
     databaseURL: 'https://pushnotification-1a017-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'pushnotification-1a017.firebasestorage.app',
-    iosBundleId: 'com.example.hoardlinks',
+    iosBundleId: 'com.hoardlinks',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -77,7 +77,7 @@ class DefaultFirebaseOptions {
     projectId: 'pushnotification-1a017',
     databaseURL: 'https://pushnotification-1a017-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'pushnotification-1a017.firebasestorage.app',
-    iosBundleId: 'com.example.hoardlinks',
+    iosBundleId: 'com.hoardlinks',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

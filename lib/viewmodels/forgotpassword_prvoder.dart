@@ -21,7 +21,7 @@ class ForgotPasswordProvider extends ChangeNotifier {
     _successMessage = null;
     notifyListeners();
 
-    final url = Uri.parse("https://hoardlinks-backend.onrender.com/api/v1/auth/verifyotp/resetpassword");
+    final url = Uri.parse("http://hoardlinks.controlroom.cordsinnovations.com/api/v1/auth/verifyotp/resetpassword");
 
     try {
       final response = await http.post(

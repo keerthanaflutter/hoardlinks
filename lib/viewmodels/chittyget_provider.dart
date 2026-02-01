@@ -17,7 +17,7 @@ class ChittyProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
 
-    const url = 'https://hoardlinks-backend.onrender.com/api/v1/chitty/getAllChitty';
+    const url = 'http://hoardlinks.controlroom.cordsinnovations.com/api/v1/chitty/getAllChitty';
 
     try {
       final token = await AuthStorage.getAccessToken();

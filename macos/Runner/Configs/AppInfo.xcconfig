@@ -8,7 +8,7 @@
 PRODUCT_NAME = hoardlinks
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.hoardlinks
+PRODUCT_BUNDLE_IDENTIFIER = com.hoardlinks
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.

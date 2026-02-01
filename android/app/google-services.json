@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:764145042226:android:6375fff66e6a8a4c394d2b",
+        "mobilesdk_app_id": "1:764145042226:android:c3c5d0191df77a2d394d2b",
         "android_client_info": {
-          "package_name": "com.example.hoardlinks"
+          "package_name": "com.hoardlinks"
         }
       },
       "oauth_client": [],

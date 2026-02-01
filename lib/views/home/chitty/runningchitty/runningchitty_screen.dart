@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:hoardlinks/viewmodels/chittyget_provider.dart';
 import 'package:hoardlinks/views/home/chitty/chittydetails_screen.dart';
 import 'package:provider/provider.dart';
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 // Import your provider, card, and detail screen paths here
 

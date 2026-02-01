@@ -27,7 +27,7 @@ class ChittyDetailsProvider extends ChangeNotifier {
 
       final response = await http.get(
         Uri.parse(
-          "https://hoardlinks-backend.onrender.com/api/v1/chitty/getChitty/$chittyId",
+          "http://hoardlinks.controlroom.cordsinnovations.com/api/v1/chitty/getChitty/$chittyId",
         ),
         headers: {
           "Content-Type": "application/json",

@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:hoardlinks/core/constants/loginToken_constant.dart';
 import 'package:hoardlinks/data/models/agency_details_model.dart';
 import 'package:http/http.dart' as http;
-// Import your auth storage and model here
-// import 'path_to_auth_storage.dart';
-// import 'path_to_model.dart';
 
 class AgencyDetailprovider with ChangeNotifier {
   AgencyDetailModel? _agencyDetail;
@@ -18,7 +15,7 @@ class AgencyDetailprovider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final String url = 'https://hoardlinks-backend.onrender.com/api/v1/agency/get/$agencyId';
+    final String url = 'http://hoardlinks.controlroom.cordsinnovations.com/api/v1/agency/get/$agencyId';
 
     try {
       final String? token = await AuthStorage.getAccessToken();

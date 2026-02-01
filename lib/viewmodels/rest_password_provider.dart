@@ -29,7 +29,7 @@ class PasswordUpdateProvider extends ChangeNotifier {
       }
 
       // 2. API Call using PUT
-      final url = Uri.parse("https://hoardlinks-backend.onrender.com/api/v1/profile/update/password");
+      final url = Uri.parse("http://hoardlinks.controlroom.cordsinnovations.com/api/v1/profile/update/password");
       
       final response = await http.put( // ✅ Changed from patch to put
         url,

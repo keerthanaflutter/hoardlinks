@@ -2,14 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hoardlinks/viewmodels/agency_details_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-// Ensure these imports match your project structure
-// import 'package:hoardlinks/providers/agency_detail_provider.dart';
 
 class AgencyDetailScreen extends StatefulWidget {
   final int agencyId;

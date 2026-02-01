@@ -23,7 +23,7 @@ class ChittyJoinProvider with ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    const String url = 'https://hoardlinks-backend.onrender.com/api/v1/chitty/JoinChitty';
+    const String url = 'http://hoardlinks.controlroom.cordsinnovations.com/api/v1/chitty/JoinChitty';
 
     try {
       // 1. Retrieve the access token from storage

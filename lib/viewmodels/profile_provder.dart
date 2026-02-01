@@ -29,7 +29,7 @@ class ProfileProvider with ChangeNotifier {
 
       // API Request
       final response = await http.get(
-        Uri.parse('https://hoardlinks-backend.onrender.com/api/v1/profile/get'),
+        Uri.parse('http://hoardlinks.controlroom.cordsinnovations.com/api/v1/profile/get'),
         headers: headers,
       );
 

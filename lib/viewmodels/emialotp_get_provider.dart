@@ -14,7 +14,7 @@ class EmailOtpGetProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final url = Uri.parse("https://hoardlinks-backend.onrender.com/api/v1/auth/get/otp");
+    final url = Uri.parse("http://hoardlinks.controlroom.cordsinnovations.com/api/v1/auth/get/otp");
     final body = jsonEncode({"email": email});
 
     // 🔥 PRINT REQUEST DETAILS

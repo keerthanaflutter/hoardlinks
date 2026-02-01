@@ -24,7 +24,7 @@ class ProfileUpdateProvider with ChangeNotifier {
     _isSuccess = false;
     notifyListeners();
 
-    final url = Uri.parse("https://hoardlinks-backend.onrender.com/api/v1/profile/update");
+    final url = Uri.parse("http://hoardlinks.controlroom.cordsinnovations.com/api/v1/profile/update");
 
     try {
       final token = await AuthStorage.getAccessToken();
